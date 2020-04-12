@@ -309,7 +309,7 @@ TextMesh:
   m_GameObject: {fileID: 1355456643796922}
   m_Text: "!! WARNING !!\r\nPLAYING  LOSE/LOSE\r\nWILL  LIKELY  RESULT\r\nIN  ASSETS
     \ ON  YOUR\r\nGAME  BEING  DELETED!!\r\n\r\nI  TAKE  NO  RESPONSIBILITY\r\nFOR
-    \ SOFTLOCKS/\"BUGS\"!!\r\n\r\nYOU HAVE BEEN WARNED!!"
+    \ SOFTLOCKS/CRASHES!!\r\n\r\nYOU HAVE BEEN WARNED!!"
   m_OffsetZ: 0
   m_CharacterSize: 0.2
   m_LineSpacing: 1

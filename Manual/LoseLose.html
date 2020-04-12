@@ -11,10 +11,6 @@
     <script src="js/ktane-utils.js"></script>
 </head>
 <style>
-        .black {
-            background-color: #EEEEEE;
-        }
-
 		.red {
             background-color: #FFEEEE;
         }
@@ -32,39 +28,39 @@
                     <h2>On the Subject of Lose/Lose</h2>
                     <p class="flavour-text">You either don't solve your bomb, or you break the game. There's no in-between.</p>
 
-                    <p>The module consists of one block of text. When starting, there's a warning stating that it might delete various assets.</p>
+                    <p>The module consists of one block of text. When starting, there's a warning stating that it might delete assets.</p>
 					<p><strong>This is not a joke. The module may delete critical instances necessary to keep the game running.</strong> You can always reboot your game if it becomes unplayable, as it never deletes physical files.</p>
 					<p>If you solve any module before it activates, the module will strike. To prevent this; select the module, which will start running the payload. From then on, after any* solved module, the text will change.</p>
 					<p></p>
 					<table>
 						<tr>
-							<td>
-								If the text displays "LOSELOSE":
+							<td class="red">
+								If the text on the module displays "I'M DONE DESTROYING THE BOMB!":
 								</br>
 								<ul>
 									<li>The module will be ready to become solved, which can be done by selecting the module at any time. <strong>This will not delete anything.</strong></li>
 								</ul>
 							</td>
 						</tr>
-						<tr class="red">
+						<tr>
 							<td>
-								Otherwise if the text is colored red:
+								Otherwise if the text on the module is colored white:
 								</br>
 								<ul>
-									<li>The module has tried to grab a random component**, but the deletion was unsuccessful as it doesn't exist, and no deletion has occured.</li>
+									<li>The module has tried to grab a random component, but the component was in the whitelist**, and no deletion has occured.</li>
 								</ul>
 							</td>
 						</tr>
 						<tr>
-							<td>
-								Otherwise if the text is colored white:
+							<td class="red">
+								Otherwise if the text on the module is colored red:
 								</br>
 								<ul>
-									<li>The module has tried to grab a random component**, and the deletion was successful. It will no longer appear until the game has been restarted.</li>
+									<li>The module has tried to grab a random component, and the deletion was successful. It will no longer appear until the game has been restarted.</li>
 								</ul>
 							</td>
 						</tr>
-						<tr class="red">
+						<tr>
 							<td>
 								Otherwise:
 								</br>

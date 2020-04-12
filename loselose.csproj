@@ -275,6 +275,7 @@
     <Compile Include="Assets\TestHarness\Widgets\SerialNumber.cs" />
     <Compile Include="Assets\TestHarness\Widgets\TwoFactorWidget.cs" />
     <Compile Include="Assets\TestHarness\Widgets\Widget.cs" />
+    <Compile Include="Assets\WinWin.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Examples\Assets\Shaders\BlendTwoTexturesLitAndUnlit.shader" />

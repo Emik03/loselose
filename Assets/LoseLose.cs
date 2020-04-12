@@ -14,11 +14,12 @@ public class LoseLose : MonoBehaviour
     public KMSelectable Object;
     public TextMesh Text;
 
+    static bool _playSound = true;
     private bool _lightsOn = false, _started = false, _isSolved = false, _solvable = false;
     private static int _moduleIdCounter = 1;
     private int _moduleId = 0, _stage = 0;
-    static private string[] _ignore = { "Lose/Lose", "Forget The Colors", "14", "Bamboozling Time Keeper", "Brainf---", "Forget Enigma", "Forget Everything", "Forget It Not", "Forget Me Not", "Forget Me Later", "Forget Perspective", "Forget Them All", "Forget This", "Forget Us Not", "Organization", "Purgatory", "Simon Forgets", "Simon's Stages", "Souvenir", "Tallordered Keys", "The Time Keeper", "The Troll", "The Very Annoying Button", "Timing Is Everything", "Turn The Key", "Ultimate Custom Night", "Übermodule" };
-    readonly static private string[] _preserve = { "Lose/Lose", "LoseLose", "Twitch", "Bomb", "Module", "Timer", "Mission", "Component_Highlight", "Camera", "TestHarness", "Audio Sources", "PlaySoundHandler", "IDNumber"};
+    static private string[] _ignore = { "Win/Win", "Lose/Lose", "Forget The Colors", "14", "Bamboozling Time Keeper", "Brainf---", "Forget Enigma", "Forget Everything", "Forget It Not", "Forget Me Not", "Forget Me Later", "Forget Perspective", "Forget Them All", "Forget This", "Forget Us Not", "Organization", "Purgatory", "Simon Forgets", "Simon's Stages", "Souvenir", "Tallordered Keys", "The Time Keeper", "The Troll", "The Very Annoying Button", "Timing Is Everything", "Turn The Key", "Ultimate Custom Night", "Übermodule" };
+    readonly static private string[] _blacklist = { "Win/Win", "Lose/Lose", "WinWin", "LoseLose", "Twitch", "Bomb", "Module", "KTPlayerController", "Timer", "Mission", "Component_Highlight", "Camera", "TestHarness", "Audio Sources", "PlaySoundHandler", "MusicManager", "IDNumber" };
     private StringBuilder _builder = new StringBuilder();
 
     /// <summary>
@@ -31,7 +32,6 @@ public class LoseLose : MonoBehaviour
         {
             Debug.LogFormat("[Lose/Lose #{0}] Strike! The module was not activated, yet you solved {1}.", _moduleId, Info.GetSolvableModuleNames().Last());
             _stage++;
-            Audio.PlaySoundAtTransform("soundLoseLose", Module.transform);
             Module.HandleStrike();
         }
     }
@@ -45,18 +45,18 @@ public class LoseLose : MonoBehaviour
         Debug.LogFormat("[Lose/Lose #{0}] Lose/Lose has been activated! Be careful what you wish for.", _moduleId);
         Object.AddInteractionPunch(32767);
         Text.text = "";
-        Text.color = new Color32(255, 255, 255, 255);
+        Text.color = new Color32(255, 0, 0, 255);
         _started = true;
         _stage = 0;
 
         while (true)
         {
             //if all solvable modules are solved
-            if (!Application.isEditor && _stage == Info.GetSolvableModuleNames().Where(a => !_ignore.Contains(a)).Count())
+            if (Application.isEditor && _stage == Info.GetSolvableModuleNames().Where(a => !_ignore.Contains(a)).Count())
             {
                 _solvable = true;
-                Text.text = name.ToUpper();
-                Text.fontSize = 800 / name.Length;
+                Text.text = "I'M  DONE  DESTROYING  THE  BOMB!";
+                Text.fontSize = 800 / Text.text.Length;
                 yield break;
             }
 
@@ -73,33 +73,39 @@ public class LoseLose : MonoBehaviour
                 if (allObjects[rng] != null)
                 {
                     //if any items found in preserve array match the name
-                    for (int i = 0; i < _preserve.Length; i++)
+                    for (int i = 0; i < _blacklist.Length; i++)
                     {
-                        if (allObjects[rng].name.Contains(_preserve[i]))
+                        if (allObjects[rng].name.Contains(_blacklist[i]))
                         {
-                            Text.color = new Color32(255, 0, 0, 255);
+                            Text.text = allObjects[rng].name.ToUpper();
+                            Text.fontSize = 750 / allObjects[rng].name.Length;
+                            Text.color = new Color32(255, 255, 255, 255);
                             break;
                         }
 
                         //final index
-                        if (i == _preserve.Length - 1)
+                        if (i == _blacklist.Length - 1)
                         {
                             //actual payload
                             Debug.LogFormat("[Lose/Lose #{0}] {1}", _moduleId, allObjects[rng].name);
                             Text.text = allObjects[rng].name.ToUpper();
-                            Text.fontSize = 800 / allObjects[rng].name.Length;
-                            Text.color = new Color32(255, 255, 255, 255);
+                            Text.fontSize = 750 / allObjects[rng].name.Length;
+                            Text.color = new Color32(255, 0, 0, 255);
                             _builder.Append(allObjects[rng].name + ", ");
                             Destroy(allObjects[rng]);
                         }
                     }
-                    
+
                 }
 
                 else
-                    Text.color = new Color32(255, 0, 0, 255);
+                {
+                    Text.text = allObjects[rng].name.ToUpper();
+                    Text.fontSize = 750 / allObjects[rng].name.Length;
+                    Text.color = new Color32(255, 255, 255, 255);
+                }
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -121,7 +127,12 @@ public class LoseLose : MonoBehaviour
     {
         //make text visible
         Text.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
-        Audio.PlaySoundAtTransform("soundLoseLose", Module.transform);
+        if (_playSound)
+        {
+            Audio.PlaySoundAtTransform("soundLoseLose", Module.transform);
+            _playSound = false;
+        }
+
         _lightsOn = true;
         Init();
     }
