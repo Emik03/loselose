@@ -11,13 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: loselose
-  title: Lose/Lose
+  id: cursedModules
+  title: Emik's Cursed Modules
   author: Emik
   description: 'As you reboot, you find that something has overwritten your bomb!
 
 
-    moduleId: loselose & winwin
+    moduleId: loselose & winwin & e621
 
 
     no this is not going on the repo
@@ -27,6 +27,6 @@ MonoBehaviour:
 
 
     Is there a bug? Do you have a question? Discord: @Emik#0001'
-  version: 1.1
+  version: 1
   outputFolder: D:\Steam\steamapps\common\Keep Talking and Nobody Explodes\mods
   previewImage: {fileID: 2800000, guid: 750c2dd7daea1b947aaec77cde89253e, type: 3}

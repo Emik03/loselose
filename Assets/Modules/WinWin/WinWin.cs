@@ -43,7 +43,7 @@ public class WinWin : MonoBehaviour
     {
         //activate
         Debug.LogFormat("[Win/Win #{0}] Win/Win has been activated! Be careful what you wish for.", _moduleId);
-        Object.AddInteractionPunch(32767);
+        Object.AddInteractionPunch();
         Text.text = "";
         Text.color = new Color32(0, 255, 255, 255);
         _started = true;
@@ -52,7 +52,7 @@ public class WinWin : MonoBehaviour
         while (true)
         {
             //if all solvable modules are solved
-            if (Application.isEditor && _stage == Info.GetSolvableModuleNames().Where(a => !_ignore.Contains(a)).Count())
+            if (!Application.isEditor && _stage == Info.GetSolvableModuleNames().Where(a => !_ignore.Contains(a)).Count())
             {
                 _solvable = true;
                 Text.text = "I'M  DONE  DUPLICATING  THE  BOMB!";
@@ -187,7 +187,7 @@ public class WinWin : MonoBehaviour
 
         _isSolved = true;
         Audio.PlaySoundAtTransform("soundWinWin", Module.transform);
-        Object.AddInteractionPunch(32767);
+        Object.AddInteractionPunch();
         Module.HandlePass();
     }
 
