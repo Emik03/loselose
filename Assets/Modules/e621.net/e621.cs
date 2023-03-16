@@ -156,7 +156,7 @@ public class e621 : MonoBehaviour
         {
             Text.text = "Fetching... (" + (i+1) + "/" + fetchAttempts + " tries)";
             Text.fontSize = 150;
-
+            
             string baseuri = allowExplicit ? "https://e621.net/" : "https://e926.net/";
             string uri = baseuri + "posts.json?limit=1&tags=order:random+type:png+type:jpg";
 
@@ -168,7 +168,7 @@ public class e621 : MonoBehaviour
                 yield return webRequest.SendWebRequest();
 
                 Match match;
-                Regex regex1, regex2, regex3;
+                Regex regex1, regex2, regex3, regex4;
                 if (!allowExplicit)
                 {
                     regex1 = new Regex(@"""rating"":""s""");
@@ -190,6 +190,14 @@ public class e621 : MonoBehaviour
                     regex2 = new Regex(@"https:\/\/static1\.e926\.net\/data\/..\/..\/................................\...g");
                     regex3 = new Regex(@"https:\/\/static1\.e926\.net\/data\/sample\/..\/..\/................................\...g");
                 }
+
+                regex4 = new Regex(@"""id"":(\d+)");
+
+                match = regex4.Match(webRequest.downloadHandler.text);
+                if(!match.Success)
+                    continue;
+
+                rnd = int.Parse(match.Groups[1].Value);
 
                 match = regex2.Match(webRequest.downloadHandler.text);
 
@@ -218,7 +226,7 @@ public class e621 : MonoBehaviour
                     break;
                 }
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
             }
         }
 
