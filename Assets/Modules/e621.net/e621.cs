@@ -346,11 +346,11 @@ public class e621 : MonoBehaviour
 
         for (byte i = 0; i < _solution.Length; i++)
         {
-            while (_solution[i] != Text.text[i])
-            {
-                Button.OnInteract();
-                yield return new WaitForSeconds(0.1f);
-            }
+           do
+           {
+           Button.OnInteract();
+           yield return new WaitForSeconds(0.1f);
+           } while (_solution[i] != Text.text[i]);
 
             yield return new WaitForSeconds(1.1f);
         }
