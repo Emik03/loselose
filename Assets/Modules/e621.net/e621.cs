@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -149,6 +150,24 @@ public class e621 : MonoBehaviour
         catch (JsonReaderException e)
         {
             Debug.LogFormat("[e621.net #{0}] JSON reading failed with error {1}, extracting default values.", _moduleId, e.Message);
+        }
+
+        var path = Path.Combine(Application.persistentDataPath, "e621");
+
+        if (!File.Exists(path))
+            File.WriteAllText(path, "false");
+
+        try
+        {
+            var cointent = File.ReadAllText(path);
+            bool b;
+
+            if (bool.TryParse(cointent, out b))
+                allowExplicit = b;
+        }
+        catch (IOException e)
+        {
+            Debug.LogFormat("[e621.net #{0}] File reading failed with error {1}.", _moduleId, e.Message);
         }
 
         int rnd = 0;
