@@ -71,7 +71,7 @@ public class e621 : MonoBehaviour
                         Module.HandlePass();
                         return;
                     }
-                    
+
                     Text.text += _pressed.ToString();
                     _pressed = 0;
                 }
@@ -154,11 +154,11 @@ public class e621 : MonoBehaviour
         int rnd = 0;
         for (uint i = 0; i < fetchAttempts; i++)
         {
-            Text.text = "Fetching... (" + (i+1) + "/" + fetchAttempts + " tries)";
+            Text.text = "Fetching... (" + (i + 1) + "/" + fetchAttempts + " tries)";
             Text.fontSize = 150;
-            
+
             string baseuri = allowExplicit ? "https://e621.net/" : "https://e926.net/";
-            string uri = baseuri + "posts.json?limit=1&tags=order:random+type:png+type:jpg";
+            string uri = baseuri + "posts.json?limit=1&tags=order:random+~type:png+~type:jpg";
 
             using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
             {
@@ -194,7 +194,7 @@ public class e621 : MonoBehaviour
                 regex4 = new Regex(@"""id"":(\d+)");
 
                 match = regex4.Match(webRequest.downloadHandler.text);
-                if(!match.Success)
+                if (!match.Success)
                     continue;
 
                 rnd = int.Parse(match.Groups[1].Value);
@@ -239,6 +239,7 @@ public class e621 : MonoBehaviour
         {
             rnd = 0;
             Debug.LogFormat("[e621.net #{0}] Failed to establish connection with e621.net/e926.net, resorting to default answer...", _moduleId);
+            _ready = true;
         }
 
         _solution = rnd.ToString();
@@ -279,18 +280,8 @@ public class e621 : MonoBehaviour
         return new Color32((byte)(r / total), (byte)(g / total), (byte)(b / total), 255);
     }
 
-    /// <summary>
-    /// Determines whether the input from the TwitchPlays chat command is valid or not.
-    /// </summary>
-    /// <param name="par">The string from the user.</param>
-    private bool IsValid(string par)
-    {
-        uint b;
-        return uint.TryParse(par, out b);
-    }
-
 #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} submit <#> <#> <#> <#> (Presses the screen during beat '#' | valid numbers are from 1-32 | example: !{0} submit 1 7 13 19";
+    private readonly string TwitchHelpMessage = @"!{0} submit <#> (Submits that image ID)";
 #pragma warning restore 414
 
     /// <summary>
@@ -299,39 +290,32 @@ public class e621 : MonoBehaviour
     /// <param name="command">The twitch command made by the user.</param>
     IEnumerator ProcessTwitchCommand(string command)
     {
-        //splits each command by spaces
-        string[] buttonPress = command.Split(' ');
+        Regex rx = new Regex(@"^\s*submit\s*(\d+)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        Match m = rx.Match(command);
 
         //if command is formatted correctly
-        if (Regex.IsMatch(buttonPress[0], @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        if (m.Success)
         {
             yield return null;
-
-            //less than 4 numbers
-            if (buttonPress.Length < 2)
-                yield return "sendtochaterror Please specify a number to submit!";
-
-            //more than 4 numbers
-            else if (buttonPress.Length > 2)
-                yield return "sendtochaterror Too many numbers! Only one number can be submitted!";
-
-            //if command has an invalid parameter
-            else if (!IsValid(buttonPress.ElementAt(1)))
-                yield return "sendtochaterror Invalid number! Make sure the number submitted isn't too large!";
-
-            //if command is valid, push button accordingly
-            else
+            foreach (char c in m.Groups[1].Value)
             {
-                for (byte i = 0; i < buttonPress[1].Length; i++)
+                int v = int.Parse(c.ToString());
+                if (v == 0)
                 {
-                    do
-                    {
-                       Button.OnInteract();
-                       yield return new WaitForSeconds(0.1f);
-                     } while (buttonPress[1][i] != Text.text[i]);
-
-                    yield return new WaitForSeconds(1.1f);
+                    Button.OnInteract();
+                    //frame-based interaction timer lmao
+                    for (int i = 0; i < 10; i++)
+                        yield return null;
                 }
+                while (_pressed != v)
+                {
+                    Button.OnInteract();
+                    for (int i = 0; i < 10; i++)
+                        yield return null;
+                }
+                while (_inputMode)
+                    yield return true;
             }
         }
     }
@@ -341,18 +325,8 @@ public class e621 : MonoBehaviour
     /// </summary>
     IEnumerator TwitchHandleForcedSolve()
     {
-        //pushes the screen once, waits until anacrusis is complete
-        Debug.LogFormat("Activating AutoSolver...");
-
-        for (byte i = 0; i < _solution.Length; i++)
-        {
-           do
-           {
-           Button.OnInteract();
-           yield return new WaitForSeconds(0.1f);
-           } while (_solution[i] != Text.text[i]);
-
-            yield return new WaitForSeconds(1.1f);
-        }
+        var it = ProcessTwitchCommand("submit " + _solution.Substring(Text.text.Length - 1, _solution.Length - Text.text.Length + 1));
+        while (it.MoveNext())
+            yield return it.Current;
     }
 }
